@@ -10,7 +10,7 @@ window.SITE_CONFIG = {
      Alternative: Formspree. Set formEndpoint to your Formspree URL
      (https://formspree.io/f/XXXXXXXX) and leave accessKey empty.     */
   formEndpoint: "https://api.web3forms.com/submit",
-  accessKey: "",                        // <-- paste Web3Forms access key
+  accessKey: "a5dfcbbe-ee86-4558-9092-451ed52d85f4",
   emailSubject: "New co-packing lead from the website",
 
   /* ---- Calendar (shown after a successful submit) -----------------
