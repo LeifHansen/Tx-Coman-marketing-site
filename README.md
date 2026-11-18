@@ -22,7 +22,7 @@ No build step. Upload the folder to any static host (Netlify, Vercel, Cloudflare
 1. **Email notifications** — create a free account at <https://web3forms.com> using the inbox that should receive leads. Copy the access key into `accessKey` in `assets/config.js`. Every submission is emailed to you with all fields (name, company, email, phone, website, format, product type, volume, stage, message, page URL, timestamp).
    *Prefer Formspree?* Set `formEndpoint` to your Formspree form URL and leave `accessKey` empty.
 2. **Calendar** — paste your Calendly / Google appointment / Cal.com / HubSpot booking link into `calendarUrl`. It appears on the success screen after submit, in the "Book a call" link, and on `thank-you.html`.
-3. **Domain** — find-and-replace `https://www.yourdomain.com` with your real domain in all `.html` files, `sitemap.xml` and `robots.txt`. Also replace `hello@yourdomain.com` and `+1-512-000-0000`.
+3. **Domain** — find-and-replace `https://beveragecopackingtx.com` with your real domain in all `.html` files, `sitemap.xml` and `robots.txt`. Also replace `hello@beveragecopackingtx.com` and `+1-512-000-0000`.
 4. **Social image** — add a 1200×630 PNG at `assets/og-image.png` (referenced by Open Graph / Twitter tags).
 5. Deploy, then submit `sitemap.xml` in Google Search Console and create a Google Business Profile for the local listing.
 
@@ -34,7 +34,7 @@ The brand name appears as plain text so it is indexable. To re-skin for a new cl
 
 ```bash
 # run inside the site folder
-sed -i 's/Texas Hemp Co-Pack/NEW BRAND NAME/g; s#https://www.yourdomain.com#https://newdomain.com#g' *.html sitemap.xml robots.txt
+sed -i 's/Texas Hemp Co-Pack/NEW BRAND NAME/g; s#https://beveragecopackingtx.com#https://newdomain.com#g' *.html sitemap.xml robots.txt
 ```
 
 Then change the accent color in `assets/style.css` (`--accent`), swap `assets/favicon.svg`, and update `assets/config.js`. Hero copy, FAQ answers and the formats cards live in `index.html`.
