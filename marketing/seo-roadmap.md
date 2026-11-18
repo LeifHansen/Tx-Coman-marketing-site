@@ -16,6 +16,7 @@ Audience: commercial buyers looking for manufacturing services, not consumers lo
 | Commercial research | how to choose a beverage co-packer | /resources/choosing-a-beverage-copacker.html |
 | Packaging comparison | cans vs bottles for beverages | /resources/cans-vs-bottles.html |
 | First-run planning | hemp beverage production checklist | /resources/launching-hemp-beverage.html |
+| Resource hub | beverage co-packing guides | /resources/ |
 
 ## Launch priorities
 1. Verify domain, canonical tags and redirects on Netlify; ensure only one production hostname.
@@ -36,10 +37,10 @@ Audience: commercial buyers looking for manufacturing services, not consumers lo
 - Then improve pages based on actual Search Console queries and lead quality, not synthetic keyword density.
 
 ## Measurement
-Event: `generate_lead` fires after confirmed form provider success when gtag is configured.
-Recommended funnel: organic landing page → service page → `#quote` → confirmed lead.
-Fields for CRM enrichment: name, company, email, phone, website, product_type, packaging, volume, stage, message, page_url, timestamp.
+Set `ga4MeasurementId` in `assets/config.js`. Events (see README for parameters): `generate_lead` (only after Web3Forms confirms `success: true`), `form_start`, `form_step_complete`, `form_submit_error`, `cta_click`, `menu_open`.
+Recommended funnel: organic landing page → service page → `#quote` (form is embedded on every service and guide page, pre-filled for that service) → step 1 complete → confirmed lead.
+Fields for CRM enrichment: name, company, email, phone, website, product_type, packaging, volume, stage, timeline, message, form_source, page_url, submitted_at, landing_page, referrer, utm_*, gclid.
 Only capture necessary B2B details. Avoid collecting confidential formulas.
 
 ## Structured data
-Organization, WebSite, Service, BreadcrumbList, and Article as appropriate. Avoid declaring a fake operating location or using LocalBusiness as if this independent site runs one factory. Do not assume FAQ rich results are available to commercial sites.
+Organization, WebSite, Service, BreadcrumbList, FAQPage (visible FAQs only), CollectionPage (/resources/) and Article as appropriate. Avoid declaring a fake operating location or using LocalBusiness as if this independent site runs one factory. Do not assume FAQ rich results are available to commercial sites.
