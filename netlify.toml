@@ -25,3 +25,11 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=604800, must-revalidate"
+
+# Canonical host: redirect www → apex (Netlify also does this automatically
+# for the primary domain, this keeps it explicit).
+[[redirects]]
+  from = "https://www.beveragecopackingtx.com/*"
+  to = "https://beveragecopackingtx.com/:splat"
+  status = 301
+  force = true
