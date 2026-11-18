@@ -1,77 +1,30 @@
-/* Lead form: validate → POST to form provider (emails you) → show calendar link. */
-(function () {
-  var cfg = window.SITE_CONFIG || {};
-  var form = document.getElementById("lead-form");
-  if (!form) return;
-
-  var submitBtn = document.getElementById("lead-submit");
-  var errorEl = document.getElementById("lead-error");
-  var successEl = document.getElementById("lead-success");
-  var calLink = document.getElementById("calendar-link");
-  var configured = !!(cfg.accessKey || (cfg.formEndpoint && cfg.formEndpoint.indexOf("web3forms") === -1));
-
-  if (calLink && cfg.calendarUrl) calLink.href = cfg.calendarUrl;
-  document.querySelectorAll("[data-calendar]").forEach(function (a) { if (cfg.calendarUrl) a.href = cfg.calendarUrl; });
-
-  function showError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
-
-  function normalizeWebsite(v) {
-    v = (v || "").trim();
-    if (v && !/^https?:\/\//i.test(v)) v = "https://" + v;
-    return v;
-  }
-
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    errorEl.hidden = true;
-
-    if (form.querySelector('[name="_gotcha"]').value) return; // bot
-
-    var website = form.elements.website;
-    website.value = normalizeWebsite(website.value);
-    if (!form.checkValidity()) { form.reportValidity(); return; }
-
-    var data = {};
-    new FormData(form).forEach(function (v, k) { if (k !== "_gotcha") data[k] = v; });
-    data.subject = cfg.emailSubject || "New co-packing lead";
-    data.from_name = "Website lead form";
-    data.page = location.href;
-    data.submitted_at = new Date().toISOString();
-    if (cfg.accessKey) data.access_key = cfg.accessKey;
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Sending…";
-
-    var done = function () {
-      form.hidden = true;
-      successEl.hidden = false;
-      successEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      var h = successEl.querySelector("h3"); if (h) h.focus();
-      if (window.gtag) gtag("event", "generate_lead", { form: "copack_lead" });
-      if (cfg.webhookUrl) {
-        try { fetch(cfg.webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data), keepalive: true }).catch(function () {}); } catch (_) {}
-      }
-    };
-    var fail = function () {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Request a quote";
-      showError("Something went wrong sending your request. Please try again, or book a call directly using the calendar link below.");
-    };
-
-    if (!configured) {
-      // Demo mode: no provider configured yet. Show the success state so the flow can be previewed.
-      console.warn("Lead form: no form endpoint configured in assets/config.js — running in demo mode.");
-      setTimeout(done, 500);
-      return;
-    }
-
-    fetch(cfg.formEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(data)
-    }).then(function (r) { return r.ok ? done() : fail(); }).catch(fail);
+/* Accessible navigation, form submission and lead tracking. */
+(function(){
+  "use strict";
+  var y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();
+  var toggle=document.querySelector(".menu-toggle"),menu=document.getElementById("mobile-menu");
+  if(toggle&&menu){toggle.addEventListener("click",function(){var expanded=toggle.getAttribute("aria-expanded")==="true";toggle.setAttribute("aria-expanded",String(!expanded));menu.hidden=expanded;});menu.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){menu.hidden=true;toggle.setAttribute("aria-expanded","false");});});}
+  var form=document.getElementById("lead-form");if(!form)return;
+  var cfg=window.SITE_CONFIG||{},button=document.getElementById("lead-submit"),error=document.getElementById("lead-error"),success=document.getElementById("lead-success");
+  function fail(message){button.disabled=false;button.textContent="Send project brief ↗";error.textContent=message;error.hidden=false;}
+  form.addEventListener("submit",function(event){
+    event.preventDefault();
+    error.hidden=true;
+    if(form.elements["_gotcha"]&&form.elements["_gotcha"].value)return;
+    if(!form.checkValidity()){form.reportValidity();return;}
+    if(!cfg.formEndpoint||!cfg.accessKey){fail("The inquiry form is temporarily unavailable. Please email hello@beveragecopackingtx.com.");return;}
+    var values={};new FormData(form).forEach(function(v,k){if(k!=="_gotcha")values[k]=String(v).trim();});
+    values.access_key=cfg.accessKey;
+    values.subject=cfg.emailSubject||"New manufacturing inquiry";
+    values.from_name="Beverage Co-Packing Texas website";
+    values.page_url=location.href;
+    values.submitted_at=new Date().toISOString();
+    button.disabled=true;button.textContent="Submitting…";
+    fetch(cfg.formEndpoint,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(values)}).then(function(response){return response.json().catch(function(){return {};}).then(function(body){if(!response.ok||body.success===false)throw Error("Not accepted");return body;});}).then(function(){
+      form.hidden=true;success.hidden=false;success.scrollIntoView({behavior:"smooth",block:"center"});
+      var focusTarget=success.querySelector("h3");if(focusTarget)focusTarget.focus();
+      if(typeof window.gtag==="function")window.gtag("event","generate_lead",{event_category:"lead",form_name:"manufacturing_inquiry",product_type:values.product_type,packaging:values.packaging});
+      if(cfg.webhookUrl){try{fetch(cfg.webhookUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(values),keepalive:true}).catch(function(){});}catch(e){}}
+    }).catch(function(){fail("We could not confirm your inquiry was delivered. Please try again or email hello@beveragecopackingtx.com.");});
   });
-
-  // Footer year
-  var y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
 })();
